@@ -4,27 +4,51 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/snowflake-server-go/src/server"
+	"gopkg.in/yaml.v3"
+	"io/ioutil"
 	"log"
 	"os"
 	"strings"
 )
 
+type Config struct {
+	Service struct {
+		Port string `yaml:"port"`
+	} `yaml:"service"`
+}
+
+var validCommands map[string]string
+
+func init() {
+	validCommands = map[string]string{
+		"help": "Display this help message.",
+		"exit": "Exit the program.",
+	}
+}
+
 func main() {
-	s, err := server.NewServer(":10000")
+	configFile, err := ioutil.ReadFile("./config.yaml")
+	if err != nil {
+		log.Fatalf("Failed to read config file: %v", err)
+	}
+
+	var config Config
+	err = yaml.Unmarshal(configFile, &config)
+	if err != nil {
+		log.Fatalf("Failed to parse config file: %v", err)
+	}
+
+	s, err := server.NewServer(config.Service.Port)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	go func() {
 		if err := s.Start(); err != nil {
 			log.Fatal(err)
 		}
 	}()
-	fmt.Println("Server started on port 10000. Type 'help' for a list of commands. Press enter to exit.")
-
-	validCommands := map[string]string{
-		"help": "Display this help message.",
-		"exit": "Exit the program.",
-	}
+	fmt.Printf("Server started on port %s. Type 'help' for a list of commands. Press enter to exit.\n", config.Service.Port)
 
 	reader := bufio.NewReader(os.Stdin)
 	for {

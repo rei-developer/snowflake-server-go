@@ -1,3 +1,3 @@
 module github.com/snowflake-server-go/src/server
 
-go 1.20
+go 1.19
