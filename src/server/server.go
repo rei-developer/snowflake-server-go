@@ -16,7 +16,7 @@ type server struct {
 	listener net.Listener
 }
 
-func newServer(port string) (*server, error) {
+func NewServer(port string) (*server, error) {
 	l, err := net.Listen("tcp", port)
 	if err != nil {
 		return nil, err
@@ -24,8 +24,7 @@ func newServer(port string) (*server, error) {
 	return &server{listener: l}, nil
 }
 
-func (s *server) start() error {
-	fmt.Printf("Server started on port %s\n", s.listener.Addr().String())
+func (s *server) Start() error {
 	for {
 		conn, err := s.listener.Accept()
 		if err != nil {
