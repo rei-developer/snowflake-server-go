@@ -1,6 +1,11 @@
 go 1.19
 
 use (
-	./src/server
+	src/common
+	src/db
+	src/server
+	src/user
+	src/response
+	src/handlers
 	.
 )

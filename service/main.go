@@ -3,7 +3,9 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/snowflake-server-go/src/db"
 	"github.com/snowflake-server-go/src/server"
+	User "github.com/snowflake-server-go/src/user"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"log"
@@ -49,6 +51,19 @@ func main() {
 		}
 	}()
 	fmt.Printf("Server started on port %s. Type 'help' for a list of commands. Press enter to exit.\n", config.Service.Port)
+
+	err = db.Connect()
+	if err != nil {
+		panic(err)
+	}
+
+	// Get a user by ID
+	user, err := User.GetUserByID(1)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("User %d: %s (%s)\n", user.ID, user.UID, user.Email)
 
 	reader := bufio.NewReader(os.Stdin)
 	for {
